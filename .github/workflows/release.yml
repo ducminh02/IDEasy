@@ -132,7 +132,18 @@ jobs:
           * Linux: https://repo1.maven.org/maven2/com/devonfw/tools/IDEasy/ide-cli/${current_version}/ide-cli-${current_version}-linux-x64.tar.gz
           # Changes
           https://github.com/devonfw/IDEasy/blob/main/CHANGELOG.adoc#${noDotVersion/-beta/}"
+          
+          # Export current release version to env so Winget Releaser step can access it
+          echo "CURRENT_RELEASE_VERSION=${current_version}" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BUILD_USER: ${{ secrets.BUILD_USER }}
           BUILD_USER_PASSWD: ${{ secrets.BUILD_USER_PASSWD }}
+
+      - name: Publish to Winget
+        uses: vedantmgoyal2009/winget-Releaser@v2
+        with:
+          identifier: devonfw.IDEasy
+          version: ${{ env.CURRENT_RELEASE_VERSION }}
+          installers-regex: '\.msi$'
+          token: ${{ secrets.WINGET_TOKEN }}
